@@ -2,6 +2,20 @@ const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
 require('dotenv').config();
+const fs = require('fs');
+const path = require('path');
+
+function readWhitelist() {
+  const filePath = path.join(__dirname, 'data', 'whitelist.json');
+  try {
+    const rawData = fs.readFileSync(filePath, 'utf-8');
+    return JSON.parse(rawData);
+  } catch (err) {
+    console.error('❌ Whitelist read error:', err.message);
+    return [];
+  }
+}
+
 
 
 const app = express();
@@ -11,17 +25,24 @@ app.use(express.json());
 app.post('/api/ai-plan', async (req, res) => {
   const { trainingType, age, weight, height } = req.body;
 
-  const prompt = `
+const whitelist = readWhitelist();
+const prompt = `
+You are generating a fitness program for an app.
+Only use exercises from this list: ${whitelist.join(', ')}.
 User wants to focus on ${trainingType}.
 They are ${age} years old, weigh ${weight} kg, and are ${height} cm tall.
-Generate a beginner-level weekly workout plan with exercises, sets, and reps.
+Generate a beginner-level weekly workout plan using only the provided exercise IDs with sets and reps.
+Format the response like this:
+push-ups: 3x8
+plank: 3x30s
 `;
+
 
   try {
     const response = await axios.post(
       'https://openrouter.ai/api/v1/chat/completions',
       {
-        model: 'deepseek/deepseek-chat-v3-0324:free',
+        model: 'tngtech/deepseek-r1t-chimera:free',
         messages: [
           { role: 'system', content: 'You are a personal fitness coach.' },
           { role: 'user', content: prompt },
@@ -43,6 +64,6 @@ Generate a beginner-level weekly workout plan with exercises, sets, and reps.
   }
 });
 
-app.listen(3001, () => {
-  console.log('✅ Server running at http://localhost:3001');
+app.listen(3001, '0.0.0.0', () => {
+  console.log("✅ Server running at http://localhost:3001");
 });
