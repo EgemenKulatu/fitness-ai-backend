@@ -32,6 +32,7 @@ Only use exercises from this list: ${whitelist.join(', ')}.
 User wants to focus on ${trainingType}.
 They are ${age} years old, weigh ${weight} kg, and are ${height} cm tall.
 Generate a beginner-level weekly workout plan using only the provided exercise IDs with sets and reps.
+Only return the workout plan in a structured format. Do not explain your reasoning or include a thought process.
 Format the response like this:
 push-ups: 3x8
 plank: 3x30s
