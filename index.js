@@ -17,7 +17,6 @@ function readWhitelist() {
 }
 
 
-
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -36,8 +35,8 @@ Only return the workout plan in a structured format. Do not explain your reasoni
 Format the response like this:
 push-ups: 3x8
 plank: 3x30s
+squats: 3x10
 `;
-
 
   try {
     const response = await axios.post(
